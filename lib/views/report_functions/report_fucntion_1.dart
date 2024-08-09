@@ -101,9 +101,6 @@ class _ReportFunctionState extends State<ReportFunction> {
                   child: Text('Generate Report'),
                 ),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.blue, // Background color
-                  ),
                   onPressed: () {
                     showSimpleDialog(context,
                         '500 - Internal Server Error , API not working');
