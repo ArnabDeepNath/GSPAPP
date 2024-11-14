@@ -5,7 +5,7 @@ import 'package:gspappfinal/constants/AppColor.dart';
 class AppFonts {
   static TextStyle Header1({
     double fontSize = 18,
-    FontWeight fontWeight = FontWeight.bold,
+    FontWeight fontWeight = FontWeight.w700,
     Color color = const Color(0xFF000000),
   }) {
     return GoogleFonts.inter(
@@ -17,7 +17,7 @@ class AppFonts {
 
   static TextStyle Subtitle({
     double fontSize = 16,
-    FontWeight fontWeight = FontWeight.w700,
+    FontWeight fontWeight = FontWeight.w500,
     Color color = const Color(0xFF000000),
   }) {
     return GoogleFonts.inter(

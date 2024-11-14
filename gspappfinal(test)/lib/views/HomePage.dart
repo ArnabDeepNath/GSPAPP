@@ -8,6 +8,7 @@ import 'package:gspappfinal/models/UserModel.dart';
 import 'package:gspappfinal/providers/partyProvider.dart';
 import 'package:gspappfinal/providers/userProvider.dart';
 import 'package:gspappfinal/views/party_functions/PartyView.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -116,26 +117,12 @@ class _HomePageState extends State<HomePage> {
                 return CustomScrollView(
                   slivers: [
                     SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(
-                          'Your Parties',
-                          style: GoogleFonts.inter(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          PartyModel party = parties[index];
-                          return Padding(
+                      child: Column(
+                        children: [
+                          Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Container(
-                              height: MediaQuery.of(context).size.height * 0.18,
+                              padding: const EdgeInsets.symmetric(vertical: 16.0),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(12),
@@ -149,138 +136,254 @@ class _HomePageState extends State<HomePage> {
                                 ],
                               ),
                               child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  ListTile(
-                                    title: Text(
-                                      party.name,
-                                      style: AppFonts.Subtitle(),
-                                    ),
-                                    subtitle: Text(
-                                      party.contactNumber,
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                    trailing: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          'Rs. ${party.balance}',
+                                  Row(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                        child: Text(
+                                          'FY 24-25',
                                           style: GoogleFonts.inter(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w700,
-                                            color:
-                                                party.balanceType == 'receive'
-                                                    ? Colors.red
-                                                    : Colors.green,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.black,
                                           ),
                                         ),
-                                        Text(
-                                          party.balanceType == 'receive'
-                                              ? 'You will pay'
-                                              : 'You will receive',
-                                          style: GoogleFonts.inter(
-                                            color:
-                                                party.balanceType == 'receive'
-                                                    ? Colors.red
-                                                    : Colors.green,
-                                          ),
+                                      ),
+                                      Icon(
+                                        Icons.keyboard_arrow_down,
+                                        color: Colors.black,
+                                      )
+                                    ],
+                                  ),
+                                  Divider(color: Colors.blue.shade100),
+                                  // Sale and Purchase Row
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          children: [
+                                            Text(
+                                              '₹ 2,000',
+                                              style: GoogleFonts.inter(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w500,
+                                                color: AppColors.primaryColor,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              'Sale',
+                                              style: GoogleFonts.inter(
+                                                fontSize: 14,
+                                                color: AppColors.primaryColor,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Container(
+                                          height: 40,
+                                          width: 1,
+                                          color: Colors.blue.shade100,
+                                        ),
+                                        Column(
+                                          children: [
+                                            Text(
+                                              '₹ 2,000',
+                                              style: GoogleFonts.inter(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w500,
+                                                color: AppColors.primaryColor,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              'Purchase',
+                                              style: GoogleFonts.inter(
+                                                fontSize: 14,
+                                                color:AppColors.primaryColor,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
-                                    ),
-                                    onTap: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              PartyDetailsPage(
-                                            party: party,
-                                            user: currentUser,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16.0),
-                                    child: IntrinsicHeight(
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          InkWell(
-                                            onTap: () {},
-                                            child: Column(
-                                              children: [
-                                                Icon(Icons.call),
-                                                Text(
-                                                  'Send Notification',
-                                                  style: AppFonts.Subtitle2(),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          const VerticalDivider(
-                                            color: Colors.grey,
-                                            thickness: 0.8,
-                                            indent: 5,
-                                            endIndent: 5,
-                                          ),
-                                          InkWell(
-                                            onTap: () async {
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) {
-                                                  return AlertDialog(
-                                                    title: Text(
-                                                        'Confirm Deletion'),
-                                                    content: Text(
-                                                        'Are you sure you want to delete this party?'),
-                                                    actions: [
-                                                      TextButton(
-                                                        onPressed: () {
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                        },
-                                                        child: Text('Cancel'),
-                                                      ),
-                                                      TextButton(
-                                                        onPressed: () async {
-                                                          await _deleteParty(
-                                                            party.id,
-                                                            currentUser!.id,
-                                                          );
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                        },
-                                                        child: Text('Delete'),
-                                                      ),
-                                                    ],
-                                                  );
-                                                },
-                                              );
-                                            },
-                                            child: Column(
-                                              children: [
-                                                Icon(Icons.cancel),
-                                                Text(
-                                                  'Delete Party',
-                                                  style: AppFonts.Subtitle2(),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
+                          ),
+                          // Existing Row for "Your Parties" title
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Row(
+                              children: [
+                                Text(
+                                  'Your Parties',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                const Spacer(),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.primaryColor,
+                                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    // Navigator.of(context).push(
+                                    //   MaterialPageRoute(
+                                    //     builder: (context) => AddPartyScreen(
+                                    //       user: _currentUser,
+                                    //     ),
+                                    //   ),
+                                    // );
+                                  },
+                                  child: const Row(
+                                    children: [
+                                      Icon(Icons.add, color: Colors.white),
+                                      SizedBox(width: 2),
+                                      Text(
+                                        'Add Party',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          PartyModel party = parties[index];
+                          DateTime dateTime = (party.creationDate).toDate();
+                          String formattedDate = DateFormat('d MMM yyyy').format(dateTime);
+                          return Stack(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 20),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.3),
+                                        offset: const Offset(0, 2),
+                                        blurRadius: 4,
+                                        spreadRadius: 1,
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      ListTile(
+                                        title: Text(
+                                          party.name,
+                                          style: AppFonts.Subtitle(),
+                                        ),
+                                        subtitle: Text(
+                                          formattedDate.toString(),
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w400,
+                                            color: Colors.grey
+                                          ),
+                                        ),
+                                        trailing: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              '₹ ${party.balance}',
+                                              style: GoogleFonts.inter(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w700,
+                                                color:
+                                                    party.balanceType == 'receive'
+                                                        ? Colors.red
+                                                        : Colors.green,
+                                              ),
+                                            ),
+                                            Text(
+                                              party.balanceType == 'receive'
+                                                  ? 'You will pay'
+                                                  : 'You will receive',
+                                              style: GoogleFonts.inter(
+                                                color:
+                                                    party.balanceType == 'receive'
+                                                        ? Colors.red
+                                                        : Colors.green,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  PartyDetailsPage(
+                                                party: party,
+                                                user: currentUser,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                top: 13,
+                                right:5,
+                                child: IconButton(
+                                  icon: const Icon(Icons.more_vert),
+                                  onPressed: () {
+                                    // Define your menu options here
+                                    showModalBottomSheet(
+                                      context: context,
+                                      builder: (context) {
+                                        return Wrap(
+                                          children: [
+                                            ListTile(
+                                              leading: Icon(Icons.edit),
+                                              title: Text('Edit'),
+                                              onTap: () {
+                                                Navigator.pop(context);
+                                                // Handle edit option here
+                                              },
+                                            ),
+                                            ListTile(
+                                              leading: Icon(Icons.delete),
+                                              title: Text('Delete'),
+                                              onTap: () {
+                                                Navigator.pop(context);
+                                                // Handle delete option here
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
                           );
                         },
                         childCount: parties.length,

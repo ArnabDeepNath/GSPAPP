@@ -12,7 +12,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:pdf/pdf.dart';
-import 'package:pdf_viewer_plugin/pdf_viewer_plugin.dart';
 import 'package:share_plus/share_plus.dart';
 
 class ReportFunction extends StatefulWidget {
@@ -102,7 +101,7 @@ class _ReportFunctionState extends State<ReportFunction> {
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.blue, // Background color
+                    backgroundColor: Colors.blue, // Background color
                   ),
                   onPressed: () {
                     showSimpleDialog(context,
@@ -234,7 +233,8 @@ class PDFViewerScreen extends StatelessWidget {
             ),
         ],
       ),
-      body: PdfView(path: filePath),
+      ////////////pdf view
+      body: Container(),
     );
   }
 }

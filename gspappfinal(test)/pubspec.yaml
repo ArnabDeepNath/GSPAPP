@@ -44,7 +44,6 @@ dependencies:
   provider: ^6.1.2
   pdf: ^3.9.0
   share_plus: ^4.5.3
-  pdf_viewer_plugin: ^2.0.1
   excel: ^4.0.3
   permission_handler: ^10.2.0
   open_file: ^3.3.2
