@@ -8,12 +8,13 @@ import 'package:gspappfinal/models/UserModel.dart';
 import 'package:gspappfinal/providers/partyProvider.dart';
 import 'package:gspappfinal/providers/userProvider.dart';
 import 'package:gspappfinal/views/party_functions/PartyView.dart';
+import 'package:gspappfinal/views/party_functions/add_party_page.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -238,13 +239,13 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                   ),
                                   onPressed: () {
-                                    // Navigator.of(context).push(
-                                    //   MaterialPageRoute(
-                                    //     builder: (context) => AddPartyScreen(
-                                    //       user: _currentUser,
-                                    //     ),
-                                    //   ),
-                                    // );
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => AddPartyScreen(
+                                          user: currentUser,
+                                        ),
+                                      ),
+                                    );
                                   },
                                   child: const Row(
                                     children: [

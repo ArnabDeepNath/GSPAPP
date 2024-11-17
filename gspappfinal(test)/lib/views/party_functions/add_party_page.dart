@@ -1,20 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:gspappfinal/components/SlideButton.dart';
-import 'package:gspappfinal/components/TextFormField.dart';
-import 'package:gspappfinal/components/dialogBox.dart';
 import 'package:gspappfinal/constants/AppColor.dart';
-import 'package:gspappfinal/constants/AppTheme.dart';
-
-import 'package:gspappfinal/models/PartyModel.dart';
-import 'package:gspappfinal/models/TransactionsModel.dart';
 import 'package:gspappfinal/models/UserModel.dart';
-import 'package:gspappfinal/providers/userProvider.dart';
-
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
 class AddPartyScreen extends StatefulWidget {
   UserModel? user;
@@ -22,510 +9,444 @@ class AddPartyScreen extends StatefulWidget {
     super.key,
     required this.user,
   });
-
   @override
   State<AddPartyScreen> createState() => _AddPartyScreenState();
 }
 
 class _AddPartyScreenState extends State<AddPartyScreen>
     with TickerProviderStateMixin {
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // Credentials
-  TextEditingController PartyNameController = TextEditingController();
-  TextEditingController PartyBalanceController = TextEditingController();
-  TextEditingController PartyContactController = TextEditingController();
-  TextEditingController PartyGSTController = TextEditingController();
-  // Dropdown Box ->
-  TextEditingController PartyCreationController = TextEditingController();
-  TextEditingController PartyBillingAddress = TextEditingController();
-  TextEditingController PartyEmailAddress = TextEditingController();
-  TextEditingController PartyState = TextEditingController();
+  // Controllers
+  final TextEditingController partyNameController = TextEditingController();
+  final TextEditingController openingBalanceController =
+      TextEditingController();
+  final TextEditingController asOfDateController = TextEditingController();
+  final TextEditingController contactNumberController = TextEditingController();
+  final TextEditingController billingAddressController =
+      TextEditingController();
+  final TextEditingController emailAddressController = TextEditingController();
+  final TextEditingController gstIdController = TextEditingController();
 
-  // Payment Mode Initiation
-  late String paymentType = 'cash';
-  late String BalanceType = 'pay';
+  // Dropdown Values
+  String balanceType = "To Pay";
+  String gstType = "Unregistered/Consumer";
+  String placeOfSupply = "18-Assam";
+  String rcn = "Yes";
 
-  // GST Options
-  String _selectedOption = 'Unregistered/Consumer';
+  late TabController _tabController;
 
-  String? _selectedOptionRCN = 'Yes';
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
 
-  // Place of Supply Options
-  String _selectedState = '18-Assam';
-
-  // Party Controller Intiliasation
-
-  // Date Function
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
 
-    if (picked != null) {
+    if (pickedDate != null) {
       setState(() {
-        // Update the date in the partyCreation TextEditingController
-        PartyCreationController.text = DateFormat('yyyy-MM-dd').format(picked);
+        asOfDateController.text = pickedDate.toString().split(' ')[0];
       });
     }
   }
 
-  // Define a controller for the TabBar
-  late TabController _tabController;
-  bool userTyping = false; // Added variable to track user typing
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-    PartyBalanceController.text = '0.0';
-  }
-
-  // Clear Function
-  void clear() {
-    PartyBalanceController.clear();
-    PartyContactController.clear();
-    PartyNameController.clear();
-    PartyBillingAddress.clear();
-    PartyEmailAddress.clear();
-    PartyGSTController.clear();
-    PartyState.clear();
-    PartyCreationController.clear();
-  }
-
-  // Validator
-
-  String? nonEmptyValidator(String? value) {
-    if (value != null && value.isNotEmpty) {
-      return null; // Field is not empty, so it's valid.
+  String? validateField(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'This field is required';
     }
+    return null;
+  }
 
-    // Field is empty, so return an error message.
-    return 'This field cannot be empty';
+  void clearFields() {
+    partyNameController.clear();
+    openingBalanceController.clear();
+    asOfDateController.clear();
+    contactNumberController.clear();
+    billingAddressController.clear();
+    emailAddressController.clear();
+    gstIdController.clear();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.secondaryColor,
       appBar: AppBar(
         backgroundColor: AppColors.primaryColor,
-        title: Text(
-          'Add Party',
-          style: GoogleFonts.inter(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+        leading: InkWell(
+          onTap: () {
+            Navigator.pop(context); // Go back to the previous screen
+          },
+          child: Container(
+            padding: const EdgeInsets.all(8.0),
+            child: const Icon(
+              Icons.arrow_back, // Replace with your desired icon
+              color: Colors.white, // Customize the icon color
+              size: 24, // Customize the icon size
+            ),
           ),
         ),
-        actions: [
-          SlideButton(
-            choice1: 'Cheque',
-            choice2: 'Cash',
-            onSelectionChanged: (selected) {
-              print('Selected: $selected');
-            },
-            Colors: Colors.green,
-          ),
-        ],
+        title: const Text(
+          'Add New Party',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              TextFormFieldCustom(
-                validator: nonEmptyValidator,
-                label: 'Party Name',
-                controller: PartyNameController,
-                obscureText: false,
-                onChange: (text) {
-                  // Set userTyping to true when the user starts typing
-                  setState(() {
-                    userTyping = true;
-                  });
-                  if (_tabController.indexIsChanging) {
-                    _tabController.animateTo(0);
-                  }
-                },
-              ),
-
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Party Name',
+                  style: GoogleFonts.inter(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 15,
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                TextFormField(
+                  controller: partyNameController,
+                  decoration: const InputDecoration(
+                    labelText: "Party Name",
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: validateField,
+                ),
+                const SizedBox(height: 20.0),
+                Row(
                   children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.3), // Shadow color
-                            // Shadow color
-                            offset: const Offset(0, 2), // Offset of the shadow
-                            blurRadius: 4, // Blur radius of the shadow
-                            spreadRadius: 1, // Spread radius of the shadow
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Opening Balance",
+                            style: GoogleFonts.inter(fontSize: 16.0, fontWeight: FontWeight.w500),
+                          ),
+                          const SizedBox(height: 8.0),
+                          TextFormField(
+                            controller: openingBalanceController,
+                            decoration: const InputDecoration(
+                              labelText: "Enter Opening Balance",
+                              border: OutlineInputBorder(),
+                            ),
+                            validator: validateField,
                           ),
                         ],
-                      ),
-                      width: 155,
-                      child: TextFormField(
-                        onChanged: (text) {
-                          // Set userTyping to true when the user starts typing
-                          setState(() {
-                            userTyping = true;
-                          });
-                          if (_tabController.indexIsChanging) {
-                            _tabController.animateTo(0);
-                          }
-                        },
-                        controller: PartyBalanceController,
-                        decoration: InputDecoration(
-                          labelText: 'Opening Balance*',
-                          labelStyle: GoogleFonts.inter(
-                            color: AppColors.primaryColor,
-                          ),
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: AppColors.primaryColor,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: AppColors.primaryColor,
-                            ),
-                          ),
-                        ),
                       ),
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.3), // Shadow color
-                            // Shadow color
-                            offset: const Offset(0, 2), // Offset of the shadow
-                            blurRadius: 4, // Blur radius of the shadow
-                            spreadRadius: 1, // Spread radius of the shadow
+                    const SizedBox(width: 16.0),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "As of Date",
+                            style: GoogleFonts.inter(fontSize: 16.0, fontWeight: FontWeight.w500),
+                          ),
+                          const SizedBox(height: 8.0),
+                          TextFormField(
+                            controller: asOfDateController,
+                            decoration: const InputDecoration(
+                              labelText: "Select Date",
+                              border: OutlineInputBorder(),
+                            ),
+                            onTap: () => _selectDate(context),
+                            readOnly: true,
                           ),
                         ],
-                      ),
-                      width: 155,
-                      child: TextFormField(
-                        controller: PartyCreationController,
-                        onTap: () {
-                          // Show date picker when the user taps on the TextFormField
-                          _selectDate(context);
-                        },
-                        decoration: InputDecoration(
-                          labelText: 'As of Date*',
-                          labelStyle: GoogleFonts.inter(
-                            color: AppColors.primaryColor,
-                          ),
-                          // Set the border color here
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.blue,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: AppColors.primaryColor,
-                            ),
-                          ),
-                        ),
                       ),
                     ),
                   ],
                 ),
-              ),
-              SlideButton(
-                choice1: 'To Pay',
-                choice2: 'To Recieve',
-                onSelectionChanged: (selected) {
-                  if (selected == 'To Pay') {
-                    setState(
-                      () {
-                        BalanceType = 'pay';
-                      },
-                    );
-                  } else if (selected == 'To Recieve') {
-                    setState(() {
-                      BalanceType = 'recieve';
-                    });
-                  }
-                  print(BalanceType);
-                },
-                Colors: Colors.red,
-              ),
-              TextFormFieldCustom(
-                validator: nonEmptyValidator,
-                label: 'Contact Number',
-                controller: PartyContactController,
-                obscureText: false,
-                onChange: (text) {
-                  // Set userTyping to true when the user starts typing
-                  setState(() {
-                    userTyping = true;
-                  });
-                  if (_tabController.indexIsChanging) {
-                    _tabController.animateTo(0);
-                  }
-                },
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                const SizedBox(height: 16.0),
+                Text("Balance Type", style: TextStyle(fontSize: 16.0)),
+                Row(
+                  children: [
+                    Expanded(
+                      child: RadioListTile<String>(
+                        title: Text("To Pay"),
+                        value: "To Pay",
+                        groupValue: balanceType,
+                        onChanged: (value) {
+                          setState(() {
+                            balanceType = value!;
+                          });
+                        },
+                      ),
+                    ),
+                    Expanded(
+                      child: RadioListTile<String>(
+                        title: Text("To Receive"),
+                        value: "To Receive",
+                        groupValue: balanceType,
+                        onChanged: (value) {
+                          setState(() {
+                            balanceType = value!;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16.0),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'RCN:',
-                      style: AppFonts.Subtitle(),
+                      "Contact Number",
+                      style: GoogleFonts.inter(fontSize: 16.0, fontWeight: FontWeight.w500),
                     ),
-                    DropdownButton<String>(
-                      hint: Text('RCN'),
-                      value: _selectedOptionRCN,
-                      onChanged: (String? value) {
-                        setState(() {
-                          _selectedOptionRCN = value;
-                        });
-                      },
-                      items: [
-                        'Yes',
-                        'No',
-                      ].map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
+                    const SizedBox(height: 10.0),
+                    TextFormField(
+                      controller: contactNumberController,
+                      decoration: const InputDecoration(
+                        labelText: "Contact Number",
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: validateField,
                     ),
                   ],
                 ),
-              ),
-
-              // Add a placeholder for the TabBar and TabBarView
-              Visibility(
-                visible: userTyping,
-                child: Column(
+                const SizedBox(height: 16.0),
+                Text("RCN", style: TextStyle(fontSize: 16.0)),
+                Row(
                   children: [
-                    TabBar(
-                      controller: _tabController,
-                      tabs: [
-                        Tab(text: 'Address'),
-                        Tab(text: 'GST Details'),
-                      ],
+                    Expanded(
+                      child: RadioListTile<String>(
+                        title: Text("Yes"),
+                        value: "Yes",
+                        groupValue: rcn,
+                        onChanged: (value) {
+                          setState(() {
+                            rcn = value!;
+                          });
+                        },
+                      ),
                     ),
-                    Container(
-                      height: 200, // Set the desired height
-                      child: TabBarView(
-                        controller: _tabController,
-                        children: [
-                          // Add widgets for the first tab here
-                          Column(
-                            children: [
-                              TextFormFieldCustom(
-                                validator: nonEmptyValidator,
-                                label: 'Billing Address',
-                                controller: PartyBillingAddress,
-                                obscureText: false,
-                                onChange: (text) {
-                                  // Set userTyping to true when the user starts typing
-                                },
-                              ),
-                              TextFormFieldCustom(
-                                validator: nonEmptyValidator,
-                                obscureText: false,
-                                label: 'Email Address',
-                                controller: PartyEmailAddress,
-                                onChange: (text) {
-                                  // Set userTyping to true when the user starts typing
-                                },
-                              ),
-                            ],
-                          ),
-                          // Add widgets for the second tab here
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Container(
-                                  height: 54,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey
-                                            .withOpacity(0.3), // Shadow color
-                                        // Shadow color
-                                        offset: const Offset(
-                                            0, 2), // Offset of the shadow
-                                        blurRadius:
-                                            4, // Blur radius of the shadow
-                                        spreadRadius:
-                                            1, // Spread radius of the shadow
-                                      ),
-                                    ],
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: DropdownButton<String>(
-                                      underline: Container(),
-                                      hint: const Text('GST Type'),
-                                      value: _selectedOption,
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                      ),
-                                      onChanged: (String? newValue) {
-                                        setState(() {
-                                          _selectedOption = newValue!;
-                                        });
-                                      },
-                                      items: <String>[
-                                        'Unregistered/Consumer',
-                                        'Registered - Single',
-                                        'Registered - Composite',
-                                      ].map<DropdownMenuItem<String>>(
-                                          (String value) {
-                                        return DropdownMenuItem<String>(
-                                          value: value,
-                                          child: Text(value),
-                                        );
-                                      }).toList(),
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  height: 54,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey
-                                            .withOpacity(0.3), // Shadow color
-                                        // Shadow color
-                                        offset: const Offset(
-                                            0, 2), // Offset of the shadow
-                                        blurRadius:
-                                            4, // Blur radius of the shadow
-                                        spreadRadius:
-                                            1, // Spread radius of the shadow
-                                      ),
-                                    ],
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: DropdownButton<String>(
-                                      hint: const Text('Place of Supply'),
-                                      value: _selectedState,
-                                      underline: Container(),
-                                      onChanged: (String? newValue) {
-                                        setState(() {
-                                          _selectedState = newValue!;
-                                        });
-                                      },
-                                      items: <String>[
-                                        '01-Jammu & Kashmir',
-                                        '02-Himachal Pradesh',
-                                        '03-Punjab',
-                                        '04-Chandigarh',
-                                        '05-Uttarakhand',
-                                        '06-Haryana',
-                                        '07-Delhi',
-                                        '08-Rajasthan',
-                                        '09-Uttar Pradesh',
-                                        '10-Bihar',
-                                        '11-Sikkim',
-                                        '12-Arunachal Pradesh',
-                                        '13-Nagaland',
-                                        '14-Manipur',
-                                        '15-Mizoram',
-                                        '16-Tripura',
-                                        '17-Meghalaya',
-                                        '18-Assam',
-                                        '19-West Bengal',
-                                        '20-Jharkhand',
-                                        '21-Odisha',
-                                        '22-Chhattisgarh',
-                                        '23-Madhya Pradesh',
-                                        '24-Gujarat',
-                                        '25-Daman & Diu',
-                                        '26-Dadra & Nagar Haveli & Daman & Diu',
-                                        '27-Maharashtra',
-                                        '29-Karnataka',
-                                        '30-Goa',
-                                        '31-Lakshdweep',
-                                        '32-Kerala',
-                                        '33-Tamil Nadu',
-                                        '34-Puducherry',
-                                        '35-Andaman & Nicobar Islands',
-                                        '36-Telangana',
-                                        '37-Andhra Pradesh',
-                                        '38-Ladakh',
-                                        '97-Other Territory',
-                                      ].map<DropdownMenuItem<String>>(
-                                          (String value) {
-                                        return DropdownMenuItem<String>(
-                                          value: value,
-                                          child: Text(value),
-                                        );
-                                      }).toList(),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                    Expanded(
+                      child: RadioListTile<String>(
+                        title: Text("No"),
+                        value: "No",
+                        groupValue: rcn,
+                        onChanged: (value) {
+                          setState(() {
+                            rcn = value!;
+                          });
+                        },
                       ),
                     ),
                   ],
                 ),
-              ),
-              SizedBox(height: 22),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    // The form is valid, proceed to create a new party.
-                    final userProvider =
-                        Provider.of<UserProvider>(context, listen: false);
+                SizedBox(
+                  height: 50,child: Divider(color: Colors.blue.shade200,),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Addresses',
+                      style: GoogleFonts.inter(
+                        color: AppColors.primaryColor,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 15,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Billing Address",
+                          style: GoogleFonts.inter(fontSize: 16.0, fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(height: 10.0),
+                        TextFormField(
+                          controller: billingAddressController,
+                          decoration: const InputDecoration(
+                            labelText: "Billing Address",
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: validateField,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 30.0),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Email Address",
+                          style: GoogleFonts.inter(fontSize: 16.0, fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(height: 10.0),
+                        TextFormField(
+                          controller: emailAddressController,
+                          decoration: const InputDecoration(
+                            labelText: "Email Address",
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: validateField,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
 
-                    final party = PartyModel(
-                      id: '',
-                      name: PartyNameController.text,
-                      contactNumber: PartyContactController.text,
-                      balance: PartyBalanceController.text ?? 0.0,
-                      transactions: [],
-                      creationDate: Timestamp.now(),
-                      BillingAddress: PartyBillingAddress.text,
-                      EmailAddress: PartyEmailAddress.text,
-                      GSTID: PartyGSTController.text ?? '',
-                      balanceType: BalanceType,
-                      paymentType: paymentType,
-                      GSTType: '',
-                      POS: _selectedState,
-                    );
-
-                    userProvider.addParty(
-                      party: party,
-                      userId: widget.user!.id,
-                    );
-                    clear();
-                    showSimpleDialog(context, 'Party Have been Added');
-                  }
-                },
-                child: Text('Add New Party'),
-              ),
-            ],
+                SizedBox(
+                  height: 60,child: Divider(color: Colors.blue.shade200,),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'GST Details',
+                      style: GoogleFonts.inter(
+                        color: AppColors.primaryColor,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 15,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "GST Type",
+                          style: GoogleFonts.inter(fontSize: 16.0, fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(height: 10.0),
+                        DropdownButtonFormField<String>(
+                          value: gstType,
+                          decoration: const InputDecoration(
+                            labelText: "GST Type",
+                            border: OutlineInputBorder(),
+                          ),
+                          items: [
+                            "Unregistered/Consumer",
+                            "Registered - Single",
+                            "Registered - Composite"
+                          ]
+                              .map((type) => DropdownMenuItem(
+                                    value: type,
+                                    child: Text(type),
+                                  ))
+                              .toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              gstType = value!;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 30.0),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "State",
+                          style: GoogleFonts.inter(fontSize: 16.0, fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(height: 10.0),
+                        DropdownButtonFormField<String>(
+                          value: placeOfSupply,
+                          decoration: const InputDecoration(
+                            labelText: "Place of Supply",
+                            border: OutlineInputBorder(),
+                          ),
+                          items: ["18-Assam", "27-Maharashtra", "29-Karnataka"]
+                              .map((type) => DropdownMenuItem(
+                                    value: type,
+                                    child: Text(type),
+                                  ))
+                              .toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              placeOfSupply = value!;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 30.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        height: 44,
+                        width: MediaQuery.of(context).size.width * 0.4,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: AppColors.primaryColor)),
+                        child: Center(
+                          child: Text(
+                            'Cancel',
+                            style: GoogleFonts.inter(
+                              color: AppColors.primaryColor,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () async {
+                        if (_formKey.currentState!.validate()) {
+                          // Add party logic
+                          clearFields();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text("Party added successfully")),
+                          );
+                        }
+                      },
+                      child: Container(
+                        height: 44,
+                        width: MediaQuery.of(context).size.width * 0.4,
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryColor,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Center(
+                          child:Text(
+                            'Add Item',
+                            style: GoogleFonts.inter(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
