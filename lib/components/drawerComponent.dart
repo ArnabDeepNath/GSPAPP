@@ -38,14 +38,18 @@ class _drawerComponentState extends State<drawerComponent> {
               children: [
                 Icon(
                   widget.icon,
-                  color: AppColors.primaryColor,
+                  color: Colors.grey.shade800,
                 ),
                 SizedBox(
                   width: 12,
                 ),
                 Text(
                   widget.name,
-                  style: AppFonts.SubtitleColor(),
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.grey.shade800,
+                    fontWeight: FontWeight.w600
+                  ),
                 ),
               ],
             ),

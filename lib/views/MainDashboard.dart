@@ -1,6 +1,8 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+
 import 'package:gspappfinal/components/drawerComponent.dart';
 import 'package:gspappfinal/constants/AppColor.dart';
 import 'package:gspappfinal/constants/AppTheme.dart';
@@ -15,7 +17,6 @@ import 'package:gspappfinal/views/HomePage.dart';
 import 'package:gspappfinal/views/items_functions/ItemsDisplayPage.dart';
 import 'package:gspappfinal/views/report_functions/report_fucntion_1.dart';
 import 'package:gspappfinal/views/transaction_functions/TransactionsPage.dart';
-import 'package:provider/provider.dart';
 
 class MainDashboard extends StatefulWidget {
   final String userID;
@@ -28,6 +29,8 @@ class MainDashboard extends StatefulWidget {
 class _MainDashboardState extends State<MainDashboard> {
   int _selectedIndex = 0;
   late List<Widget> _pages;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   late UserModel _currentUser = UserModel(
     id: '',
     email: '',
@@ -50,8 +53,6 @@ class _MainDashboardState extends State<MainDashboard> {
       _buildTransactionPage(_currentUser),
     ];
   }
-
-  late Stream<QuerySnapshot> itemsStream;
 
   Future<void> fetchCurrentUser() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -81,127 +82,130 @@ class _MainDashboardState extends State<MainDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: AppColors.secondaryColor,
       drawer: Drawer(
-        child: SafeArea(
-          child: Column(
-            children: [
-              const CircleAvatar(
-                radius: 45,
-                backgroundImage: NetworkImage(''),
-              ),
-              Column(
+        child: Column(
+          children: [
+            Container(
+              height: 180,
+              width: double.infinity,
+              color: AppColors.primaryColor,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  const CircleAvatar(
+                    radius: 45,
+                    backgroundImage:
+                        NetworkImage('https://i.pravatar.cc/150?img=3'),
+                  ),
+                  const SizedBox(width: 10),
                   Text(
-                    '${_currentUser.firstName}',
-                    style: AppFonts.Subtitle2(),
-                  ),
-                  const Divider(
-                    thickness: 0.8,
-                    endIndent: 20,
-                    indent: 10,
-                  ),
-                  drawerComponent(
-                    name: 'Home',
-                    icon: Icons.home,
-                    onChanged: () {},
-                  ),
-                  drawerComponent(
-                    name: 'Transactions',
-                    icon: Icons.compare_arrows,
-                    onChanged: () {},
-                  ),
-                  drawerComponent(
-                    name: 'Reports',
-                    icon: Icons.note,
-                    onChanged: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ReportFunction(
-                            user: _currentUser,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  drawerComponent(
-                    name: 'Items',
-                    icon: Icons.shopping_bag,
-                    onChanged: () {},
-                  ),
-                  drawerComponent(
-                    name: 'Settings',
-                    icon: Icons.settings,
-                    onChanged: () {},
-                  ),
-                  drawerComponent(
-                    name: 'Parties',
-                    icon: Icons.person_search,
-                    onChanged: () {},
-                  ),
-                  drawerComponent(
-                    name: 'About Us',
-                    icon: Icons.info,
-                    onChanged: () {},
-                  ),
-                  drawerComponent(
-                    name: 'Sign out',
-                    icon: Icons.logout,
-                    onChanged: () {
-                      signOut();
-                    },
-                  )
+                      '${_currentUser.firstName} \n${_currentUser.lastName}',
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 25)),
                 ],
               ),
-            ],
-          ),
-        ),
-      ),
-      appBar: AppBar(
-        backgroundColor: AppColors.secondaryColor,
-        title: Text(
-          'Hello ${_currentUser.firstName}',
-          style: AppFonts.Header1(),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
-              child: const Text(
-                'Add Party',
-              ),
-              onPressed: () {
-                Navigator.of(context).push(
+            ),
+            drawerComponent(
+              name: 'Home',
+              icon: Icons.home,
+              onChanged: () {},
+            ),
+            drawerComponent(
+              name: 'Transactions',
+              icon: Icons.compare_arrows,
+              onChanged: () {},
+            ),
+            drawerComponent(
+              name: 'Reports',
+              icon: Icons.note,
+              onChanged: () {
+                Navigator.push(
+                  context,
                   MaterialPageRoute(
-                    builder: (context) => AddPartyScreen(
+                    builder: (context) => ReportFunction(
                       user: _currentUser,
                     ),
                   ),
                 );
               },
             ),
+            drawerComponent(
+              name: 'Items',
+              icon: Icons.shopping_bag,
+              onChanged: () {},
+            ),
+            drawerComponent(
+              name: 'Settings',
+              icon: Icons.settings,
+              onChanged: () {},
+            ),
+            drawerComponent(
+              name: 'Parties',
+              icon: Icons.person_search,
+              onChanged: () {},
+            ),
+            drawerComponent(
+              name: 'About Us',
+              icon: Icons.info,
+              onChanged: () {},
+            ),
+            drawerComponent(
+              name: 'Sign out',
+              icon: Icons.logout,
+              onChanged: () {
+                signOut();
+              },
+            ),
+          ],
+        ),
+      ),
+      appBar: AppBar(
+        backgroundColor: AppColors.primaryColor,
+        leading: IconButton(
+          onPressed: () {
+            _scaffoldKey.currentState?.openDrawer();
+          },
+          icon: const Icon(
+            Icons.menu,
+            size: 25,
+            color: Colors.white,
           ),
+        ),
+        title: Text(
+          'Hello ${_currentUser.firstName}',
+          style: AppFonts.Header1().copyWith(color: Colors.white),
+        ),
+        actions: [
+          IconButton(
+              onPressed: () {},
+              icon: const Icon(
+                Icons.notifications_on,
+                color: Colors.white,
+              ))
         ],
       ),
       body: Column(
         children: [
           Container(
-            decoration: BoxDecoration(
-              color: AppColors.secondaryColor,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  buildCustomButton('Dashboard', 0),
-                  buildCustomButton('Items', 1),
-                  buildCustomButton('Transactions', 2),
-                ],
-              ),
+            color: AppColors.secondaryColor,
+            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+            child: Row(
+              //mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Expanded(child: buildCustomTab('Dashboard', 0)),
+                Expanded(child: buildCustomTab('Items', 1),),
+                Expanded(child: buildCustomTab('Transactions', 2),),
+              ],
             ),
           ),
+          const SizedBox(height: 10,),
           Expanded(
             child: IndexedStack(
               index: _selectedIndex,
@@ -213,7 +217,7 @@ class _MainDashboardState extends State<MainDashboard> {
     );
   }
 
-  Widget buildCustomButton(String text, int index) {
+  Widget buildCustomTab(String title, int index) {
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -221,42 +225,55 @@ class _MainDashboardState extends State<MainDashboard> {
         });
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+        padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 20),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(
-            color: _selectedIndex == index
-                ? AppColors.primaryColor
-                : Colors.black.withOpacity(0.2),
-          ),
           color: _selectedIndex == index
-              ? AppColors.primaryColor.withOpacity(0.1)
-              : Colors.transparent,
+              ? Colors.transparent
+              : AppColors.primaryColor.withOpacity(0.1),
+          border: Border(
+            left: BorderSide(
+              color: _selectedIndex == index
+                  ? Colors.transparent
+                  : AppColors.primaryColor,
+              width: 1,
+            ),
+            right: BorderSide(
+              color: _selectedIndex == index
+                  ? Colors.transparent
+                  : AppColors.primaryColor,
+              width: 1,
+            ),
+            bottom: BorderSide(
+              color: _selectedIndex == index
+                  ? Colors.transparent
+                  : AppColors.primaryColor,
+              width: 1,
+            ),
+          ),
         ),
         child: Text(
-          text,
+          title,
           style: TextStyle(
-            fontWeight: FontWeight.bold,
             color: _selectedIndex == index
                 ? AppColors.primaryColor
-                : Colors.black.withOpacity(0.2),
+                : Colors.black,
+            fontWeight: _selectedIndex == index ?FontWeight.w600 : FontWeight.w400,
+            fontSize: 16,
           ),
         ),
       ),
     );
   }
 
+
   Widget _buildItemsPage(UserModel user) {
     return Consumer<UserProvider>(
       builder: (context, userProvider, child) {
         return StreamBuilder<List<ItemModel>>(
-          stream: userProvider.getItemsStream(
-              user.id), // Assuming you have a method to get the items stream
+          stream: userProvider.getItemsStream(user.id),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
+              return const Center(child: CircularProgressIndicator());
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return emptyItemsPage(user: user);
             } else {
@@ -273,13 +290,10 @@ class _MainDashboardState extends State<MainDashboard> {
     return Consumer<UserProvider>(
       builder: (context, userProvider, child) {
         return StreamBuilder<List<TransactionModel>>(
-          stream: userProvider.getTransactionStream(
-              user.id), // Assuming you have a method to get the items stream
+          stream: userProvider.getTransactionStream(user.id),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
+              return const Center(child: CircularProgressIndicator());
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return Center(
                 child: Text(
@@ -297,14 +311,5 @@ class _MainDashboardState extends State<MainDashboard> {
         );
       },
     );
-  }
-
-  Future<void> fetchUserItems(UserModel user) async {
-    final itemsCollection =
-        FirebaseFirestore.instance.collection('items').where(
-              'userId',
-              isEqualTo: user.id,
-            );
-    itemsStream = itemsCollection.snapshots();
   }
 }

@@ -254,13 +254,74 @@ class _AddItemsPageState extends State<AddItemsPage> {
     return Scaffold(
       backgroundColor: AppColors.secondaryColor,
       appBar: AppBar(
-        backgroundColor: AppColors.secondaryColor,
+        backgroundColor: AppColors.primaryColor,
+        leading: InkWell(
+          onTap: () {
+            Navigator.pop(context); // Go back to the previous screen
+          },
+          child: Container(
+            padding: const EdgeInsets.all(8.0),
+            child: const Icon(
+              Icons.arrow_back, // Replace with your desired icon
+              color: Colors.white, // Customize the icon color
+              size: 24, // Customize the icon size
+            ),
+          ),
+        ),
         title: Text(
-          'New Item',
+          'Add New Item',
           style: GoogleFonts.inter(
+            color: Colors.white,
+            fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
         ),
+        actions: [
+          InkWell(
+            onTap: () async {
+              setState(() {
+                _isAddingItemBulk = true; // Show circular progress indicator
+              });
+              await _postBulkItems();
+              setState(() {
+                _isAddingItemBulk = false; // Hide circular progress indicator
+              });
+            },
+            child: Container(
+              height: 44,
+              decoration: BoxDecoration(
+                  color: AppColors.primaryColor,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.white)),
+              child: Center(
+                child: _isAddingItem
+                    ? const CircularProgressIndicator() // Show circular progress indicator
+                    : Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.download,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              'Import',
+                              style: GoogleFonts.inter(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+              ),
+            ),
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -269,12 +330,13 @@ class _AddItemsPageState extends State<AddItemsPage> {
             children: [
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 15),
                   child: Text(
                     'Item Details',
                     style: GoogleFonts.inter(
                       color: AppColors.primaryColor,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w500,
                       fontSize: 18,
                     ),
                   ),
@@ -314,22 +376,14 @@ class _AddItemsPageState extends State<AddItemsPage> {
                   validator: nonEmptyValidator,
                   obscureText: false,
                 ),
-                const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Divider(
-                    endIndent: 50,
-                    indent: 50,
-                    color: AppColors.primaryColor,
-                  ),
-                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(
-                    'Item Image',
+                    'Upload Image',
                     style: GoogleFonts.inter(
-                      color: AppColors.primaryColor,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 18,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 15,
                     ),
                   ),
                 ),
@@ -339,22 +393,14 @@ class _AddItemsPageState extends State<AddItemsPage> {
                     onImageSelected: _handleImageSelected,
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Divider(
-                    endIndent: 50,
-                    indent: 50,
-                    color: AppColors.primaryColor,
-                  ),
-                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(
                     'Tax Rate',
                     style: GoogleFonts.inter(
-                      color: AppColors.primaryColor,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 18,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 15,
                     ),
                   ),
                 ),
@@ -406,67 +452,62 @@ class _AddItemsPageState extends State<AddItemsPage> {
                   ),
                 ),
               ]),
-              InkWell(
-                onTap: () async {
-                  setState(() {
-                    _isAddingItem = true; // Show circular progress indicator
-                  });
-                  await _postItemToSubcollection();
-                  setState(() {
-                    _isAddingItem = false; // Hide circular progress indicator
-                  });
-                },
-                child: Container(
-                  height: 44,
-                  width: MediaQuery.of(context).size.width * 0.6,
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryColor,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Center(
-                    child: _isAddingItem
-                        ? CircularProgressIndicator() // Show circular progress indicator
-                        : Text(
-                            'Add Item',
-                            style: GoogleFonts.inter(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      height: 44,
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: AppColors.primaryColor)),
+                      child: Center(
+                        child: Text(
+                          'Cancel',
+                          style: GoogleFonts.inter(
+                            color: AppColors.primaryColor,
+                            fontWeight: FontWeight.w500,
                           ),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              InkWell(
-                onTap: () async {
-                  setState(() {
-                    _isAddingItemBulk =
-                        true; // Show circular progress indicator
-                  });
-                  await _postBulkItems();
-                  setState(() {
-                    _isAddingItemBulk =
-                        false; // Hide circular progress indicator
-                  });
-                },
-                child: Container(
-                  height: 44,
-                  width: MediaQuery.of(context).size.width * 0.6,
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryColor,
-                    borderRadius: BorderRadius.circular(10),
+                  InkWell(
+                    onTap: () async {
+                      setState(() {
+                        _isAddingItem = true;
+                      });
+                      await _postItemToSubcollection();
+                      setState(() {
+                        _isAddingItem = false;
+                      });
+                    },
+                    child: Container(
+                      height: 44,
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryColor,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Center(
+                        child: _isAddingItem
+                            ? const CircularProgressIndicator()
+                            : Text(
+                                'Add Item',
+                                style: GoogleFonts.inter(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                      ),
+                    ),
                   ),
-                  child: Center(
-                    child: _isAddingItem
-                        ? CircularProgressIndicator() // Show circular progress indicator
-                        : Text(
-                            'Import Items',
-                            style: GoogleFonts.inter(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                  ),
-                ),
+                ],
               ),
             ],
           ),

@@ -1,22 +1,16 @@
-## GSP Application
+# gspappfinal
 
-<!-- Date : 09-08-2024 -->
-<!-- Developers : Arnab Deep Nath & Bhaskar Borah  -->
-<!-- Organisation : Merit Fox Technologies Pvt Limited -->
+A new Flutter project.
 
-## Current Progress
+## Getting Started
 
-- User Model Created
-- Transaction Model Created
-- Items Model Created
-- Report Functionality Created
+This project is a starting point for a Flutter application.
 
-## Upcoming Developments
+A few resources to get you started if this is your first Flutter project:
 
-- UI Fix
-- GST Form Flow Fix (Along with consulting with Finance Team)
-- GST Filing Micro Service Design Implementation
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-## Sprint Number : 01
-
-<!-- Date : 12th August , 2024 to 19th , August , 2024 -->
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
