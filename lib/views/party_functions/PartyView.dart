@@ -8,6 +8,7 @@ import 'package:gspappfinal/models/PartyModel.dart';
 import 'package:gspappfinal/models/TransactionsModel.dart';
 import 'package:gspappfinal/models/UserModel.dart';
 import 'package:gspappfinal/providers/userProvider.dart';
+import 'package:gspappfinal/utils/part_details_card.dart';
 import 'package:gspappfinal/views/transaction_functions/addPaymentPage.dart';
 import 'package:gspappfinal/views/transaction_functions/add_sale_page.dart';
 import 'package:provider/provider.dart';
@@ -49,14 +50,27 @@ class _PartyDetailsPageState extends State<PartyDetailsPage> {
       return Scaffold(
         backgroundColor: AppColors.secondaryColor,
         appBar: AppBar(
+          backgroundColor: AppColors.primaryColor,
+          leading: InkWell(
+            onTap: () {
+              Navigator.pop(context); // Go back to the previous screen
+            },
+            child: Container(
+              padding: const EdgeInsets.all(8.0),
+              child: const Icon(
+                Icons.arrow_back, // Replace with your desired icon
+                color: Colors.white, // Customize the icon color
+                size: 24, // Customize the icon size
+              ),
+            ),
+          ),
           title: Text(
             'Party Details',
             style: GoogleFonts.inter(
-              fontWeight: FontWeight.bold,
               fontSize: 24,
+              color: Colors.white
             ),
           ),
-          backgroundColor: AppColors.secondaryColor,
         ),
         body: Column(
           children: [
@@ -75,47 +89,18 @@ class _PartyDetailsPageState extends State<PartyDetailsPage> {
                     snapshot.data as DocumentSnapshot<Map<String, dynamic>>;
                 PartyModel party = PartyModel.fromFirestore(document);
 
-                return Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Name: ${party.name}',
-                        style: GoogleFonts.inter(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 18,
-                          color: Colors.black,
-                        ),
-                      ),
-                      Text(
-                        'Contact: ${party.contactNumber}',
-                        style: GoogleFonts.inter(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 16,
-                          color: Colors.black,
-                        ),
-                      ),
-                      Text(
-                        'Balance: Rs. ${party.balance}',
-                        style: GoogleFonts.inter(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 16,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
+                return PartyDetailsCard(
+                    party: Party(
+                        name: party.name,
+                        contactNumber: party.contactNumber,
+                        balance: double.parse(party.balance)));
               },
             ),
-            const Divider(),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton(
-                  onPressed: () {
+                InkWell(
+                  onTap: () async {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => AddSalePage(
@@ -125,10 +110,28 @@ class _PartyDetailsPageState extends State<PartyDetailsPage> {
                       ),
                     );
                   },
-                  child: const Text('Sale'),
+                  child: Container(
+                    height: 44,
+                    width: MediaQuery.of(context).size.width * 0.4,
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryColor,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.add, color: Colors.white),
+                        SizedBox(width: 2),
+                        Text(
+                          'Add Sale',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                ElevatedButton(
-                  onPressed: () {
+                InkWell(
+                  onTap: () async {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => addPaymentPage(
@@ -138,12 +141,31 @@ class _PartyDetailsPageState extends State<PartyDetailsPage> {
                       ),
                     );
                   },
-                  child: const Text('Payment In'),
+                  child: Container(
+                    height: 44,
+                    width: MediaQuery.of(context).size.width * 0.4,
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryColor,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.add, color: Colors.white),
+                        SizedBox(width: 2),
+                        Text(
+                          'Add Payment In',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    )
+                  ),
                 ),
               ],
             ),
+            const Divider(),
             const SizedBox(
-              height: 22,
+              height: 70,
             ),
             Expanded(
               child: StreamBuilder(

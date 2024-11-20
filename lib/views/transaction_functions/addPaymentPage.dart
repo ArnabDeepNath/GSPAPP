@@ -35,12 +35,25 @@ class _addPaymentPageState extends State<addPaymentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppColors.primaryColor,
+        leading: InkWell(
+          onTap: () {
+            Navigator.pop(context); // Go back to the previous screen
+          },
+          child: Container(
+            padding: const EdgeInsets.all(8.0),
+            child: const Icon(
+              Icons.arrow_back, // Replace with your desired icon
+              color: Colors.white, // Customize the icon color
+              size: 24, // Customize the icon size
+            ),
+          ),
+        ),
         title: Text(
           'Add Payment',
           style: GoogleFonts.inter(
-            fontWeight: FontWeight.bold,
             fontSize: 22,
-            color: Colors.black,
+            color: Colors.white,
           ),
         ),
       ),
@@ -49,6 +62,7 @@ class _addPaymentPageState extends State<addPaymentPage> {
         child: SafeArea(
           child: Column(
             children: [
+              const SizedBox(height: 10,),
               TextFormFieldCustom(
                   label: 'Name',
                   controller: nameController,
@@ -73,14 +87,36 @@ class _addPaymentPageState extends State<addPaymentPage> {
                     return null;
                   },
                   obscureText: false),
+              const SizedBox(height: 30.0),
               Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
+                  InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      height: 44,
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: AppColors.primaryColor)),
+                      child: Center(
+                        child: Text(
+                          'Cancel',
+                          style: GoogleFonts.inter(
+                            color: AppColors.primaryColor,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () async {
                       final userProvider =
-                          Provider.of<UserProvider>(context, listen: false);
+                      Provider.of<UserProvider>(context, listen: false);
 
                       userProvider.addTransaction(
                         widget.user,
@@ -102,14 +138,27 @@ class _addPaymentPageState extends State<addPaymentPage> {
                       );
                       showSimpleDialog(context, 'Payment have been added');
                     },
-                    child: Text('Add Payment'),
+                    child: Container(
+                      height: 44,
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryColor,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Center(
+                        child:Text(
+                          'Save',
+                          style: GoogleFonts.inter(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: Text('Cancel'),
-                  )
                 ],
-              )
+              ),
+
             ],
           ),
         ),

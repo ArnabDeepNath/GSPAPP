@@ -195,13 +195,12 @@ class _MainDashboardState extends State<MainDashboard> {
         children: [
           Container(
             color: AppColors.secondaryColor,
-            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+            padding: const EdgeInsets.symmetric(vertical: 0),
             child: Row(
-              //mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Expanded(child: buildCustomTab('Dashboard', 0)),
-                Expanded(child: buildCustomTab('Items', 1),),
-                Expanded(child: buildCustomTab('Transactions', 2),),
+                Expanded(child: buildCustomTab('Items', 1)),
+                Expanded(child: buildCustomTab('Transactions', 2)),
               ],
             ),
           ),
@@ -225,29 +224,26 @@ class _MainDashboardState extends State<MainDashboard> {
         });
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 20),
+        height: 50,
+        alignment: Alignment.center,
         decoration: BoxDecoration(
           color: _selectedIndex == index
               ? Colors.transparent
               : AppColors.primaryColor.withOpacity(0.1),
           border: Border(
-            left: BorderSide(
-              color: _selectedIndex == index
-                  ? Colors.transparent
-                  : AppColors.primaryColor,
+            left: const BorderSide(
+              color: AppColors.primaryColor,
               width: 1,
             ),
-            right: BorderSide(
-              color: _selectedIndex == index
-                  ? Colors.transparent
-                  : AppColors.primaryColor,
+            right: const BorderSide(
+              color: AppColors.primaryColor,
               width: 1,
             ),
             bottom: BorderSide(
               color: _selectedIndex == index
                   ? Colors.transparent
                   : AppColors.primaryColor,
-              width: 1,
+              width: 2, // Highlight the selected tab
             ),
           ),
         ),
@@ -257,13 +253,16 @@ class _MainDashboardState extends State<MainDashboard> {
             color: _selectedIndex == index
                 ? AppColors.primaryColor
                 : Colors.black,
-            fontWeight: _selectedIndex == index ?FontWeight.w600 : FontWeight.w400,
-            fontSize: 16,
+            fontWeight: _selectedIndex == index
+                ? FontWeight.w600
+                : FontWeight.w400,
+            fontSize: 14, // Consistent font size
           ),
         ),
       ),
     );
   }
+
 
 
   Widget _buildItemsPage(UserModel user) {

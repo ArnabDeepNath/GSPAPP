@@ -5,9 +5,12 @@ class QuantityController extends StatefulWidget {
   final ValueChanged<bool>? onItemSelected;
   final int initialValue;
 
-  QuantityController(
-      {Key? key, this.onChanged, this.onItemSelected, this.initialValue = 0})
-      : super(key: key);
+  const QuantityController({
+    Key? key,
+    this.onChanged,
+    this.onItemSelected,
+    this.initialValue = 0,
+  }) : super(key: key);
 
   @override
   _QuantityControllerState createState() => _QuantityControllerState();
@@ -45,19 +48,35 @@ class _QuantityControllerState extends State<QuantityController> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        IconButton(
-          icon: Icon(Icons.remove),
-          onPressed: _decrement,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 9),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: Colors.grey), // Grey border
+          borderRadius: BorderRadius.circular(12), // Circular corners
         ),
-        Text('$_value'),
-        IconButton(
-          icon: Icon(Icons.add),
-          onPressed: _increment,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: Icon(Icons.remove, color: Colors.grey),
+              onPressed: _decrement,
+            ),
+            Text(
+              '$_value',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            IconButton(
+              icon: Icon(Icons.add, color: Colors.grey),
+              onPressed: _increment,
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

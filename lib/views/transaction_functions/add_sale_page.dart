@@ -101,12 +101,25 @@ class _AddSalePageState extends State<AddSalePage> {
     return Scaffold(
       backgroundColor: AppColors.secondaryColor,
       appBar: AppBar(
+        backgroundColor: AppColors.primaryColor,
+        leading: InkWell(
+          onTap: () {
+            Navigator.pop(context); // Go back to the previous screen
+          },
+          child: Container(
+            padding: const EdgeInsets.all(8.0),
+            child: const Icon(
+              Icons.arrow_back, // Replace with your desired icon
+              color: Colors.white, // Customize the icon color
+              size: 24, // Customize the icon size
+            ),
+          ),
+        ),
         title: Text(
           'Add Sale',
           style: GoogleFonts.inter(
-            fontWeight: FontWeight.bold,
             fontSize: 22,
-            color: Colors.black,
+            color: Colors.white,
           ),
         ),
       ),
@@ -115,6 +128,7 @@ class _AddSalePageState extends State<AddSalePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(height: 10,),
               TextFormFieldCustom(
                   label: 'Party Name',
                   controller: PNameController,
@@ -131,82 +145,102 @@ class _AddSalePageState extends State<AddSalePage> {
                     return null;
                   },
                   obscureText: false),
+              Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Text('Select Item',style: GoogleFonts.inter(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 15,
+                ),),
+              ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.3), // Shadow color
-                            // Shadow color
-                            offset: const Offset(0, 2), // Offset of the shadow
-                            blurRadius: 4, // Blur radius of the shadow
-                            spreadRadius: 1, // Spread radius of the shadow
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.3), // Shadow color
+                              // Shadow color
+                              offset: const Offset(0, 2), // Offset of the shadow
+                              blurRadius: 4, // Blur radius of the shadow
+                              spreadRadius: 1, // Spread radius of the shadow
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: DropdownButton<String>(
+                            isExpanded: true,
+                            underline: const SizedBox(),
+                            value: _selectedItem,
+                            onChanged: (newValue) {
+                              setState(() {
+                                _selectedItem = newValue!;
+                                _selectedItemDetails =
+                                    _itemDetails[_selectedItem] ?? {};
+                              });
+                            },
+                            items: _items.map<DropdownMenuItem<String>>((value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
                           ),
-                        ],
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: DropdownButton<String>(
-                          value: _selectedItem,
-                          onChanged: (newValue) {
-                            setState(() {
-                              _selectedItem = newValue!;
-                              _selectedItemDetails =
-                                  _itemDetails[_selectedItem] ?? {};
-                            });
-                          },
-                          items: _items.map<DropdownMenuItem<String>>((value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
                         ),
                       ),
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_selectedItem != null && QtyController > 0) {
-                        double total = QtyController *
-                            double.parse(
-                                _selectedItemDetails['salePrice'] ?? '0.0');
-
-                        selectedItems.add({
-                          'itemName': _selectedItem,
-                          'qty': QtyController,
-                          'total': total,
-                          'totalTax': _selectedItemDetails['taxRate'],
-                        });
-                        setState(() {
-                          TotalAmount.text = selectedItems
-                              .fold<int>(
-                                  0,
-                                  (sum, item) =>
-                                      sum + (item['total'] as num).toInt())
-                              .toStringAsFixed(2);
-                          balanceController.text = "0.0";
-                        });
-                      }
-                    },
-                    child: Text(
-                      'Add/Edit',
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 16,
-                        color: Colors.grey.shade400,
-                      ),
-                    ),
-                  )
+                  // ElevatedButton(
+                  //   onPressed: () {
+                  //     if (_selectedItem != null && QtyController > 0) {
+                  //       double total = QtyController *
+                  //           double.parse(
+                  //               _selectedItemDetails['salePrice'] ?? '0.0');
+                  //
+                  //       selectedItems.add({
+                  //         'itemName': _selectedItem,
+                  //         'qty': QtyController,
+                  //         'total': total,
+                  //         'totalTax': _selectedItemDetails['taxRate'],
+                  //       });
+                  //       setState(() {
+                  //         TotalAmount.text = selectedItems
+                  //             .fold<int>(
+                  //                 0,
+                  //                 (sum, item) =>
+                  //                     sum + (item['total'] as num).toInt())
+                  //             .toStringAsFixed(2);
+                  //         balanceController.text = "0.0";
+                  //       });
+                  //     }
+                  //   },
+                  //   child: Text(
+                  //     'Add/Edit',
+                  //     style: GoogleFonts.inter(
+                  //       fontWeight: FontWeight.w800,
+                  //       fontSize: 16,
+                  //       color: Colors.grey.shade400,
+                  //     ),
+                  //   ),
+                  // )
                 ],
+              ),
+              const SizedBox(height: 15,),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Text('Select Quantity',style: GoogleFonts.inter(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 15,
+                ),),
               ),
               QuantityController(
                 onChanged: (value) {
@@ -289,16 +323,37 @@ class _AddSalePageState extends State<AddSalePage> {
                     return null;
                   },
                   obscureText: false),
+              const SizedBox(height: 30,),
               Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
+                  InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      height: 44,
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: AppColors.primaryColor)),
+                      child: Center(
+                        child: Text(
+                          'Cancel',
+                          style: GoogleFonts.inter(
+                            color: AppColors.primaryColor,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () async {
                       if (PNameController != null && GSTIDController != null) {
-// print(selectedItems);
                         final userProvider =
-                            Provider.of<UserProvider>(context, listen: false);
+                        Provider.of<UserProvider>(context, listen: false);
 
                         userProvider.addTransaction(
                           widget.user,
@@ -326,16 +381,27 @@ class _AddSalePageState extends State<AddSalePage> {
                         showSimpleDialog(context, 'Please add all fields');
                       }
                     },
-                    child: const Text('Save'),
+                    child: Container(
+                      height: 44,
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryColor,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Center(
+                        child:Text(
+                          'Save',
+                          style: GoogleFonts.inter(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Cancel'),
-                  )
                 ],
               ),
+              const SizedBox(height: 30,),
             ],
           ),
         ),

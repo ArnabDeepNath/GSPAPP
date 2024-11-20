@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class BreakDownComponent extends StatefulWidget {
-  // Arguments
-  int qty;
-  String unit;
-  String salePrice;
-  String taxRate;
-  BreakDownComponent({
-    super.key,
+  final int qty;
+  final String unit;
+  final String salePrice;
+  final String taxRate;
+
+  const BreakDownComponent({
+    Key? key,
     required this.qty,
     required this.unit,
     required this.salePrice,
     required this.taxRate,
-  });
+  }) : super(key: key);
 
   @override
   State<BreakDownComponent> createState() => _BreakDownComponentState();
@@ -22,205 +22,184 @@ class BreakDownComponent extends StatefulWidget {
 class _BreakDownComponentState extends State<BreakDownComponent> {
   String _calcTotal(String cpu, int qty) {
     double total = qty * double.parse(cpu);
-    print(total);
-    return total.toString();
+    return total.toStringAsFixed(2);
   }
 
   String _calcTotalTax(String cpu, int qty, String taxRate) {
     double _taxRate = extractPercentage(taxRate);
     double totalTax = ((qty * double.parse(cpu)) * _taxRate) / 100;
-    String formattedTax = totalTax.toStringAsFixed(2);
-    return formattedTax;
+    print('$qty $taxRate $cpu');
+    print(totalTax);
+    return totalTax.toStringAsFixed(2);
   }
 
   double extractPercentage(String input) {
-    // Split the input string by '%'
     List<String> parts = input.split('%');
     if (parts.length == 2) {
-      // If the split results in 2 parts, extract the percentage value
       String percentageStr = parts[0].replaceAll(RegExp(r'[^0-9.]'), '');
       return double.tryParse(percentageStr) ?? 0.0;
     }
-    return 0.0; // Return 0.0 if the input format is not recognized
+    return 0.0;
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(8.0),
       child: Container(
-        height: 180,
-        width: MediaQuery.of(context).size.width * 0.9,
+        padding: const EdgeInsets.all(12.0),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.3), // Shadow color
-              // Shadow color
-              offset: const Offset(0, 2), // Offset of the shadow
-              blurRadius: 4, // Blur radius of the shadow
-              spreadRadius: 1, // Spread radius of the shadow
+              color: Colors.grey.withOpacity(0.2),
+              offset: Offset(0, 2),
+              blurRadius: 4,
+              spreadRadius: 1,
             ),
           ],
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Text(
-                'Breakdown',
-                style: GoogleFonts.inter(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 16,
-                  color: Colors.grey.shade400,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Item:",
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: Colors.grey.shade600,
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: 22,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text(
-                    'Qty',
+                Expanded(
+                  child: Text(
+                    "Box",
                     style: GoogleFonts.inter(
                       fontWeight: FontWeight.w400,
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
+                      fontSize: 14,
+                      color: Colors.grey.shade800,
                     ),
+                    textAlign: TextAlign.end,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  Text(
-                    'Unit',
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Rate:",
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: Colors.grey.shade600,
                   ),
-                  Text(
-                    'Rate',
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                ),
+                Text(
+                  widget.salePrice,
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: Colors.grey.shade800,
                   ),
-                  Text(
-                    'Total Tax',
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "IGST@${widget.taxRate}:",
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: Colors.grey.shade600,
                   ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text(
-                    widget.qty.toString(),
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                ),
+                Text(
+                  _calcTotalTax(widget.salePrice, widget.qty, widget.taxRate),
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: Colors.grey.shade800,
                   ),
-                  Text(
-                    widget.unit,
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Amount:",
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: Colors.grey.shade600,
                   ),
-                  Text(
-                    widget.taxRate,
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                ),
+                Text(
+                  _calcTotal(widget.salePrice, widget.qty),
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: Colors.grey.shade800,
                   ),
-                  Text(
-                    _calcTotal(widget.salePrice, widget.qty),
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Qty:",
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: Colors.grey.shade600,
                   ),
-                ],
-              ),
-              const SizedBox(
-                height: 12,
-              ),
-              const Divider(
-                thickness: 1,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text(
-                    'Total ',
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                ),
+                Text(
+                  widget.qty.toString(),
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: Colors.grey.shade800,
                   ),
-                  Text(
-                    '=',
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                ),
+              ],
+            ),
+            const Divider(thickness: 1),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Total Amount:",
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: Colors.grey.shade600,
                   ),
-                  const Text(' '),
-                  Text(
-                    _calcTotal(widget.salePrice, widget.qty),
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                ),
+                Text(
+                  _calcTotal(widget.salePrice, widget.qty),
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: Colors.grey.shade800,
                   ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text(
-                    'Total GST',
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                  Text(
-                    '=',
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                  const Text(' '),
-                  Text(
-                    _calcTotalTax(widget.salePrice, widget.qty, widget.taxRate),
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
