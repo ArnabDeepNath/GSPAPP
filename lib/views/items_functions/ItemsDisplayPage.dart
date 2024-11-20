@@ -177,41 +177,6 @@ class _ItemsDisplayPageState extends State<ItemsDisplayPage> {
                       ),
                       itemCount: userItems.length,
                       itemBuilder: (context, index) {
-                        // if (index == userItems.length) {
-                        //   return InkWell(
-                        //     onTap: () {
-                        //       Navigator.push(
-                        //         context,
-                        //         MaterialPageRoute(
-                        //           builder: (context) => AddItemsPage(
-                        //             user: widget.user,
-                        //           ),
-                        //         ),
-                        //       );
-                        //     },
-                        //     child: Container(
-                        //       decoration: BoxDecoration(
-                        //         color: Colors.white,
-                        //         borderRadius: BorderRadius.circular(10),
-                        //         boxShadow: [
-                        //           BoxShadow(
-                        //             color: Colors.grey.withOpacity(0.3),
-                        //             offset: const Offset(0, 2),
-                        //             blurRadius: 4,
-                        //             spreadRadius: 1,
-                        //           ),
-                        //         ],
-                        //       ),
-                        //       child: Center(
-                        //         child: Icon(
-                        //           Icons.add,
-                        //           size: 50,
-                        //           color: Colors.grey.shade700,
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   );
-                        // } else {
                           var item =
                               userItems[index].data() as Map<String, dynamic>;
                           return Container(
@@ -301,7 +266,6 @@ class _ItemsDisplayPageState extends State<ItemsDisplayPage> {
                             ),
                           );
                         }
-                      //},
                     );
                   },
                 ),

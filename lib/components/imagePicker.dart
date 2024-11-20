@@ -39,25 +39,28 @@ class _CustomImagePickerState extends State<CustomImagePicker> {
       children: [
         InkWell(
           onTap: _pickImage,
-          child: DottedBorder(
-            dashPattern: [6, 3],
-            color: Colors.blue,
-            strokeWidth: 2,
-            child: Container(
-              height: 84,
-              width: MediaQuery.of(context).size.width * 0.9,
-              decoration: BoxDecoration(
-                color: Colors.white,
-              ),
-              child: Center(
-                child: selectedImagePath != null
-                    ? Image.file(
-                        File(selectedImagePath!),
-                        height: 80,
-                        width: 80,
-                        fit: BoxFit.cover,
-                      )
-                    : Text('Pick Image'),
+          child: Container(
+            height: 100,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: Colors.grey.shade300),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Center(
+              child: selectedImagePath != null
+                  ? Image.file(
+                      File(selectedImagePath!),
+                      height: 80,
+                      width: 80,
+                      fit: BoxFit.cover,
+                    )
+                  : const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.upload_sharp,color: Colors.grey,),
+                  Text('Click Here To Upload',style: TextStyle(color: Colors.grey),)
+                ],
               ),
             ),
           ),

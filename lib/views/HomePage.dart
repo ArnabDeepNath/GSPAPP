@@ -8,12 +8,13 @@ import 'package:gspappfinal/models/UserModel.dart';
 import 'package:gspappfinal/providers/partyProvider.dart';
 import 'package:gspappfinal/providers/userProvider.dart';
 import 'package:gspappfinal/views/party_functions/PartyView.dart';
+import 'package:gspappfinal/views/party_functions/add_party_page.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -122,7 +123,8 @@ class _HomePageState extends State<HomePage> {
                           Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 16.0),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 16.0),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(12),
@@ -140,7 +142,8 @@ class _HomePageState extends State<HomePage> {
                                   Row(
                                     children: [
                                       Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16.0),
                                         child: Text(
                                           'FY 24-25',
                                           style: GoogleFonts.inter(
@@ -150,7 +153,7 @@ class _HomePageState extends State<HomePage> {
                                           ),
                                         ),
                                       ),
-                                      Icon(
+                                      const Icon(
                                         Icons.keyboard_arrow_down,
                                         color: Colors.black,
                                       )
@@ -159,9 +162,11 @@ class _HomePageState extends State<HomePage> {
                                   Divider(color: Colors.blue.shade100),
                                   // Sale and Purchase Row
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16.0),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         Column(
                                           children: [
@@ -203,7 +208,7 @@ class _HomePageState extends State<HomePage> {
                                               'Purchase',
                                               style: GoogleFonts.inter(
                                                 fontSize: 14,
-                                                color:AppColors.primaryColor,
+                                                color: AppColors.primaryColor,
                                               ),
                                             ),
                                           ],
@@ -232,19 +237,20 @@ class _HomePageState extends State<HomePage> {
                                 ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.primaryColor,
-                                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 15, vertical: 5),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                   ),
                                   onPressed: () {
-                                    // Navigator.of(context).push(
-                                    //   MaterialPageRoute(
-                                    //     builder: (context) => AddPartyScreen(
-                                    //       user: _currentUser,
-                                    //     ),
-                                    //   ),
-                                    // );
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => AddPartyScreen(
+                                          user: currentUser,
+                                        ),
+                                      ),
+                                    );
                                   },
                                   child: const Row(
                                     children: [
@@ -263,17 +269,18 @@ class _HomePageState extends State<HomePage> {
                         ],
                       ),
                     ),
-
                     SliverList(
                       delegate: SliverChildBuilderDelegate(
                         (context, index) {
                           PartyModel party = parties[index];
                           DateTime dateTime = (party.creationDate).toDate();
-                          String formattedDate = DateFormat('d MMM yyyy').format(dateTime);
+                          String formattedDate =
+                              DateFormat('d MMM yyyy').format(dateTime);
                           return Stack(
                             children: [
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 20),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 20),
                                 child: Container(
                                   decoration: BoxDecoration(
                                     color: Colors.white,
@@ -299,10 +306,9 @@ class _HomePageState extends State<HomePage> {
                                         subtitle: Text(
                                           formattedDate.toString(),
                                           style: const TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w400,
-                                            color: Colors.grey
-                                          ),
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w400,
+                                              color: Colors.grey),
                                         ),
                                         trailing: Column(
                                           mainAxisAlignment:
@@ -313,10 +319,10 @@ class _HomePageState extends State<HomePage> {
                                               style: GoogleFonts.inter(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w700,
-                                                color:
-                                                    party.balanceType == 'receive'
-                                                        ? Colors.red
-                                                        : Colors.green,
+                                                color: party.balanceType ==
+                                                        'receive'
+                                                    ? Colors.red
+                                                    : Colors.green,
                                               ),
                                             ),
                                             Text(
@@ -324,10 +330,10 @@ class _HomePageState extends State<HomePage> {
                                                   ? 'You will pay'
                                                   : 'You will receive',
                                               style: GoogleFonts.inter(
-                                                color:
-                                                    party.balanceType == 'receive'
-                                                        ? Colors.red
-                                                        : Colors.green,
+                                                color: party.balanceType ==
+                                                        'receive'
+                                                    ? Colors.red
+                                                    : Colors.green,
                                               ),
                                             ),
                                           ],
@@ -350,7 +356,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                               Positioned(
                                 top: 13,
-                                right:5,
+                                right: 5,
                                 child: IconButton(
                                   icon: const Icon(Icons.more_vert),
                                   onPressed: () {

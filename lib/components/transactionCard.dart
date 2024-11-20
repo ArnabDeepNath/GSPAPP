@@ -337,7 +337,6 @@ class _transactionCardState extends State<transactionCard> {
                               MaterialPageRoute(
                                 builder: (context) => PDFViewerScreen(
                                   filePath: filepath,
-                                  share: true,
                                 ),
                               ),
                             );
@@ -382,7 +381,6 @@ class _transactionCardState extends State<transactionCard> {
                                 MaterialPageRoute(
                                   builder: (context) => PDFViewerScreen(
                                     filePath: filepath,
-                                    share: true,
                                   ),
                                 ),
                               );
@@ -406,7 +404,6 @@ class _transactionCardState extends State<transactionCard> {
                                 MaterialPageRoute(
                                   builder: (context) => PDFViewerScreen(
                                     filePath: filepath,
-                                    share: true,
                                   ),
                                 ),
                               );
@@ -451,7 +448,6 @@ class _transactionCardState extends State<transactionCard> {
                                 MaterialPageRoute(
                                   builder: (context) => PDFViewerScreen(
                                     filePath: filepath,
-                                    share: true,
                                   ),
                                 ),
                               );

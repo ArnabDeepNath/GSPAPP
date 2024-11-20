@@ -13,6 +13,7 @@ import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:pdf/pdf.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
 
 class ReportFunction extends StatefulWidget {
   final UserModel user;
@@ -206,35 +207,30 @@ class _ReportFunctionState extends State<ReportFunction> {
 
 class PDFViewerScreen extends StatelessWidget {
   final String filePath;
-  final bool share;
 
-  const PDFViewerScreen({
-    Key? key,
-    required this.filePath,
-    this.share = false,
-  }) : super(key: key);
+  const PDFViewerScreen({required this.filePath, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Invoice"),
-        actions: [
-          if (share)
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                backgroundColor: Theme.of(context).colorScheme.primary,
-              ),
-              onPressed: () {
-                Share.shareFiles([filePath]);
-              },
-              child: const Text('Share PDF'),
-            ),
-        ],
+      appBar: AppBar(title: const Text('PDF Viewer')),
+      body: PDFView(
+        filePath: filePath,
+        enableSwipe: true,
+        swipeHorizontal: false,
+        autoSpacing: true,
+        pageSnap: true,
+        fitEachPage: true,
+        onRender: (pages) {
+          print('PDF rendered with $pages pages.');
+        },
+        onError: (error) {
+          print('PDF Viewer Error: $error');
+        },
+        onPageError: (page, error) {
+          print('Error on page $page: $error');
+        },
       ),
-      ////////////pdf view
-      body: Container(),
     );
   }
 }

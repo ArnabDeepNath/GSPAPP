@@ -395,14 +395,14 @@ Future<String> generatePDF_GST(
                       ),
                     ),
                   ),
-                  // pw.Positioned(
-                  //   child: pw.Container(
-                  //     width: 100,
-                  //     child: pw.Image(
-                  //       signatureImg,
-                  //     ),
-                  //   ),
-                  // ),
+                  pw.Positioned(
+                    child: pw.Container(
+                      width: 100,
+                      child: pw.Image(
+                        signatureImg,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ],
